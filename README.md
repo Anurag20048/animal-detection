@@ -32,3 +32,8 @@ Animal-Detection/
 │── utils/
 │── requirements.txt
 │── README.md
+git clone https://github.com/your-username/animal-detection.git
+cd animal-detection
+pip install -r requirements.txt
+python detect.py --source 0   # webcam
+python detect.py --source image.jpg
