@@ -1,119 +1,109 @@
 # Animal Detection & Re-Identification System
 
-Camera-based animal detection, tracking, and visual re-identification using YOLO, ByteTrack, and deep visual embeddings.
+A Python computer-vision project for detecting livestock, tracking animals across video frames, and assigning persistent visual re-identification IDs using **YOLO, ByteTrack, ResNet50 embeddings, and similarity matching**.
 
-> **Project status:** Phase 1 — repository cleanup and architecture preparation.
->
-> The repository is being reconstructed from the available project source archives. Production deployment and animal-specific biometric accuracy have not yet been validated.
+> **Project status:** Core implementation integrated and CI enabled. The project is suitable as a portfolio/demo system, while production deployment and animal-specific biometric accuracy remain unvalidated.
 
-## Project Goal
-
-The target workflow is:
+## What the system does
 
 ```text
-Camera
-  ↓
-YOLO Animal Detection
-  ↓
+Camera / Image / Video
+        ↓
+YOLO Detection
+        ↓
 ByteTrack Tracking
-  ↓
-Visual Feature Embedding
-  ↓
+        ↓
+ResNet50 Visual Embedding
+        ↓
 Similarity Matching
-  ├── Match → existing animal ID
-  └── No match → create new animal ID
-  ↓
+   ┌────┴─────┐
+ MATCH      NO MATCH
+   ↓            ↓
+Existing ID   New Animal ID
+   └────┬─────┘
+        ↓
 Detection Event
-  ├── Animal ID
-  ├── Timestamp
-  ├── Camera ID
-  ├── Location
-  ├── Detection Confidence
-  └── Similarity Score
-  ↓
-Database / History
-  ↓
-Dashboard
+  • Animal ID
+  • Species
+  • Timestamp
+  • Camera ID
+  • Camera Location
+  • Detection Confidence
+  • Similarity Score
+        ↓
+SQLite / CSV / optional MongoDB
+        ↓
+History / Analytics / Reports
 ```
 
-## Current Capabilities
+## Current capabilities
 
-The reconstructed backend already contains:
-
-- YOLOv8-based animal detection
-- ByteTrack-based object tracking
-- ResNet50 visual embeddings
-- Cosine/weighted similarity recognition
+- YOLOv8/Ultralytics object detection
+- ByteTrack object tracking
+- Persistent animal IDs such as `C00017`, `S00004`, and `O00002`
+- ResNet50 visual feature embeddings
+- Weighted cosine-similarity matching
+- Region-based crops for visual matching
+- Camera registry with camera ID and location
+- Normalized identity events with timestamp and confidence metadata
 - Automatic animal profile creation
 - SQLite and CSV persistence
 - Optional MongoDB persistence
-- JWT-style authentication
-- Image and video analysis APIs
-- Live webcam/video detection
-- Analytics and detection history
-- CSV/PDF report endpoints
-- Bootstrap 5 + Chart.js dashboard
+- FastAPI endpoints for authentication, animals, identification, history, analytics, and reports
+- Django models/admin modules and migrations
+- Image/video analysis and live webcam/video processing
+- CSV/PDF reporting support
+- Regression tests and GitHub Actions CI
 
-## Technology Stack
+## Technology stack
 
 | Layer | Technology |
 |---|---|
 | Detection | YOLOv8 / Ultralytics |
 | Tracking | ByteTrack |
-| Feature extraction | ResNet50 / PyTorch |
+| Feature extraction | ResNet50 / PyTorch / TorchVision |
 | Computer vision | OpenCV |
-| ML runtime | PyTorch |
 | API | FastAPI |
 | Web/admin layer | Django |
-| Database | SQLite / SQLAlchemy; MongoDB optional |
+| Storage | SQLite / SQLAlchemy / CSV; MongoDB optional |
 | Frontend | HTML, CSS, Bootstrap 5, JavaScript, Chart.js |
 | Authentication | JWT-style bearer authentication |
+| Testing / CI | Pytest / GitHub Actions |
 
-## Repository Structure
+## Repository structure
 
 ```text
 animal-detection/
 ├── backend/
-│   ├── api/
-│   ├── models/
-│   ├── services/
-│   ├── database/
-│   ├── utils/
-│   ├── accounts/
-│   ├── animals/
-│   ├── identification/
-│   ├── analytics_app/
-│   ├── reports/
-│   ├── dashboard/
-│   ├── backend_site/
-│   ├── app.py
-│   ├── config.py
-│   ├── manage.py
-│   ├── requirements.txt
-│   └── .env.example
-├── frontend/
-├── tests/
-├── docs/
+│   ├── api/                 # API routes and views
+│   ├── models/              # Detector, tracker, embedding, recognizer
+│   ├── services/            # Detection, animal, alert, health services
+│   ├── database/            # SQLite, CSV, MongoDB adapters
+│   ├── utils/               # Camera, image, similarity and security helpers
+│   ├── accounts/            # Django authentication app
+│   ├── animals/             # Animal profiles and images
+│   ├── identification/      # Identification jobs/results
+│   ├── analytics_app/       # Analytics models and views
+│   ├── reports/             # Report endpoints
+│   ├── dashboard/           # Django dashboard modules
+│   ├── backend_site/        # Django project configuration
+│   ├── app.py               # FastAPI entry point
+│   ├── config.py            # Environment/configuration
+│   ├── manage.py             # Django management entry point
+│   └── requirements.txt
+├── frontend/                 # Static dashboard assets
+├── tests/                    # Regression tests
+├── scripts/                  # Development/restore helpers
+├── docs/                     # Phase and project documentation
+├── .github/workflows/        # Continuous integration
 ├── .gitignore
+├── LICENSE
 └── README.md
 ```
 
-## Development Roadmap
+## Quick start
 
-- [x] Phase 1 — Clean repository structure and development configuration
-- [ ] Phase 2 — Validate and harden animal detection
-- [ ] Phase 3 — Improve animal re-identification and persistent IDs
-- [ ] Phase 4 — Add camera identity, timestamps, and location history
-- [ ] Phase 5 — Complete dashboard, animal profiles, analytics, and history
-- [ ] Phase 6 — Testing, CI, and production hardening
-- [ ] Phase 7 — Professional GitHub documentation and demo assets
-- [ ] Phase 8 — Deployment and live/demo environment
-
-See [`docs/PHASE-1.md`](docs/PHASE-1.md) for the Phase 1 scope.
-
-## Local Setup
-
-### Backend
+### 1. Backend setup
 
 ```powershell
 cd backend
@@ -122,29 +112,94 @@ python -m venv .venv
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 copy .env.example .env
+```
+
+### 2. Start the FastAPI service
+
+```powershell
 uvicorn app:app --reload
 ```
 
 The development API is expected at `http://127.0.0.1:8000`.
 
-### Frontend
+### 3. Run tests from the repository root
 
-The existing frontend can be served as a static application. Its API base URL should point to the running backend during local development.
+```powershell
+pytest -q
+```
 
-## API Areas
+GitHub Actions runs the same regression suite against the backend dependency set.
 
-The current backend exposes routes for authentication, animals, detections, history, analytics, reports, image/video analysis, and live detection. The API surface will be stabilized and tested in later phases.
+### 4. Frontend
 
-## Data & Privacy
+The static frontend is located under `frontend/`. Serve it with a local static server and configure its API base URL for the running backend.
 
-Local databases, uploaded media, generated crops, runtime logs, and credentials are intentionally excluded from Git. Use `.env.example` as the configuration template and keep real secrets in `.env`.
+## Configuration
 
-## Limitations
+Copy `backend/.env.example` to `backend/.env` and configure values such as:
 
-The current recognition pipeline uses generic deep visual embeddings and similarity matching. Region crops are an early implementation rather than specialized animal biometric models. Therefore, this project should be described as **animal re-identification using visual embeddings**, not as a clinically or scientifically validated biometric identification system.
+- `YOLO_MODEL_PATH` — detector weights
+- `CAMERA_ID` — logical camera identifier
+- `CAMERA_LOCATION` — camera location label
+- camera source / camera configuration values
+- database and optional MongoDB settings
 
-Standard pretrained object-detection classes may not cover every livestock species equally; model/class coverage will be validated in Phase 2.
+Keep real credentials and local runtime data out of Git.
+
+## API areas
+
+The backend includes routes for:
+
+- Authentication and current-user information
+- Animal registration and animal profiles
+- Image/video identification
+- Detection history with filters and pagination
+- Analytics
+- CSV/PDF reports
+- Live detection/video processing
+
+The exact route definitions are maintained in the backend API and application URL modules.
+
+## Recognition approach
+
+The current re-identification pipeline is a **visual similarity system**:
+
+1. Detect an animal with YOLO.
+2. Track the detection with ByteTrack.
+3. Generate a normalized ResNet50 embedding from the animal crop.
+4. Compare the embedding with stored embeddings for the relevant species.
+5. Reuse an existing animal ID when the similarity exceeds the configured threshold; otherwise create a new ID.
+6. Update the stored representation using the configured embedding momentum.
+
+This is useful for demonstrating an end-to-end re-identification architecture, but it should not be presented as a scientifically validated biometric system.
+
+## Important limitations
+
+- Generic pretrained ResNet50 embeddings are used; the model is not specifically trained for livestock identity recognition.
+- Region crops are an early visual-feature strategy, not specialized nose/ear/stripe/fur biometric models.
+- Similarity thresholds are configurable and have not been validated as production-grade accuracy metrics.
+- Standard COCO detector weights do not provide validated coverage for every livestock species. Buffalo recognition requires appropriate custom detector weights if buffalo detection is required.
+- Camera location is configuration metadata; the application does not automatically determine physical geolocation.
+- Production deployment, large-scale performance, security hardening, and real-world accuracy still require environment-specific validation.
+
+## Testing and CI
+
+The repository includes regression tests covering core detector mapping, camera configuration, recognition behavior, and identity-event metadata. GitHub Actions installs `backend/requirements.txt` and runs `pytest -q` with the repository root on `PYTHONPATH`.
+
+## Development roadmap
+
+- [x] Repository cleanup and project documentation
+- [x] YOLO detection and ByteTrack tracking architecture
+- [x] Visual embedding and similarity recognition architecture
+- [x] Persistent animal ID generation
+- [x] Camera ID/location identity events
+- [x] Complete backend source integration
+- [x] Regression test suite and CI workflow
+- [ ] Full environment-based runtime validation with real camera/video data
+- [ ] Animal-specific embedding training/evaluation
+- [ ] Production deployment and monitoring
+- [ ] Demo dataset, screenshots, and performance benchmarks
 
 ## License
 
-See `LICENSE`.
+See [`LICENSE`](LICENSE).
