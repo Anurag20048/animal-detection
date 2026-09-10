@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyc.*
+.venv/
+data/crops/**
+data/outputs/**
+data/logs/*.csv
+!data/crops/.gitkeep
+!data/outputs/.gitkeep
+!data/logs/.gitkeep
