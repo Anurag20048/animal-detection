@@ -1,39 +1,150 @@
-animal-detection
-An AI-based system that detects and classifies animals in images and videos using deep learning and computer vision techniques. It identifies different animal species in real time and displays results with bounding boxes and confidence scores, making it useful for applications like wildlife monitoring, surveillance, and smart farming.
-Features
-Real-time animal detection using webcam or video input
-Supports multiple animal classes (e.g., dog, cat, cow, horse, etc.)
-Bounding box visualization with labels and confidence scores
-Image and video file input support
-Easy-to-use interface for testing and deployment
-Technologies Used
-Python
-OpenCV
-TensorFlow / PyTorch
-YOLO (You Only Look Once) or CNN-based models
-NumPy, Matplotlib
-How It Works
-Input image or video is captured through a camera or file.
-The trained deep learning model processes the frame.
-Objects (animals) are detected and classified.
-Bounding boxes and labels are displayed on detected animals.
-Applications
-Wildlife monitoring and conservation
-Smart surveillance systems
-Farm animal tracking
-Automated zoo management
-Road safety (animal crossing detection)
-Animal-Detection/
-│── dataset/
-│── models/
-│── src/
-│   ├── detect.py
-│   ├── train.py
-│── utils/
-│── requirements.txt
-│── README.md
-git clone https://github.com/your-username/animal-detection.git
-cd animal-detection
+# Animal Detection & Re-Identification System
+
+Camera-based animal detection, tracking, and visual re-identification using YOLO, ByteTrack, and deep visual embeddings.
+
+> **Project status:** Phase 1 — repository cleanup and architecture preparation.
+>
+> The repository is being reconstructed from the available project source archives. Production deployment and animal-specific biometric accuracy have not yet been validated.
+
+## Project Goal
+
+The target workflow is:
+
+```text
+Camera
+  ↓
+YOLO Animal Detection
+  ↓
+ByteTrack Tracking
+  ↓
+Visual Feature Embedding
+  ↓
+Similarity Matching
+  ├── Match → existing animal ID
+  └── No match → create new animal ID
+  ↓
+Detection Event
+  ├── Animal ID
+  ├── Timestamp
+  ├── Camera ID
+  ├── Location
+  ├── Detection Confidence
+  └── Similarity Score
+  ↓
+Database / History
+  ↓
+Dashboard
+```
+
+## Current Capabilities
+
+The reconstructed backend already contains:
+
+- YOLOv8-based animal detection
+- ByteTrack-based object tracking
+- ResNet50 visual embeddings
+- Cosine/weighted similarity recognition
+- Automatic animal profile creation
+- SQLite and CSV persistence
+- Optional MongoDB persistence
+- JWT-style authentication
+- Image and video analysis APIs
+- Live webcam/video detection
+- Analytics and detection history
+- CSV/PDF report endpoints
+- Bootstrap 5 + Chart.js dashboard
+
+## Technology Stack
+
+| Layer | Technology |
+|---|---|
+| Detection | YOLOv8 / Ultralytics |
+| Tracking | ByteTrack |
+| Feature extraction | ResNet50 / PyTorch |
+| Computer vision | OpenCV |
+| ML runtime | PyTorch |
+| API | FastAPI |
+| Web/admin layer | Django |
+| Database | SQLite / SQLAlchemy; MongoDB optional |
+| Frontend | HTML, CSS, Bootstrap 5, JavaScript, Chart.js |
+| Authentication | JWT-style bearer authentication |
+
+## Repository Structure
+
+```text
+animal-detection/
+├── backend/
+│   ├── api/
+│   ├── models/
+│   ├── services/
+│   ├── database/
+│   ├── utils/
+│   ├── accounts/
+│   ├── animals/
+│   ├── identification/
+│   ├── analytics_app/
+│   ├── reports/
+│   ├── dashboard/
+│   ├── backend_site/
+│   ├── app.py
+│   ├── config.py
+│   ├── manage.py
+│   ├── requirements.txt
+│   └── .env.example
+├── frontend/
+├── tests/
+├── docs/
+├── .gitignore
+└── README.md
+```
+
+## Development Roadmap
+
+- [x] Phase 1 — Clean repository structure and development configuration
+- [ ] Phase 2 — Validate and harden animal detection
+- [ ] Phase 3 — Improve animal re-identification and persistent IDs
+- [ ] Phase 4 — Add camera identity, timestamps, and location history
+- [ ] Phase 5 — Complete dashboard, animal profiles, analytics, and history
+- [ ] Phase 6 — Testing, CI, and production hardening
+- [ ] Phase 7 — Professional GitHub documentation and demo assets
+- [ ] Phase 8 — Deployment and live/demo environment
+
+See [`docs/PHASE-1.md`](docs/PHASE-1.md) for the Phase 1 scope.
+
+## Local Setup
+
+### Backend
+
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
 pip install -r requirements.txt
-python detect.py --source 0   # webcam
-python detect.py --source image.jpg
+copy .env.example .env
+uvicorn app:app --reload
+```
+
+The development API is expected at `http://127.0.0.1:8000`.
+
+### Frontend
+
+The existing frontend can be served as a static application. Its API base URL should point to the running backend during local development.
+
+## API Areas
+
+The current backend exposes routes for authentication, animals, detections, history, analytics, reports, image/video analysis, and live detection. The API surface will be stabilized and tested in later phases.
+
+## Data & Privacy
+
+Local databases, uploaded media, generated crops, runtime logs, and credentials are intentionally excluded from Git. Use `.env.example` as the configuration template and keep real secrets in `.env`.
+
+## Limitations
+
+The current recognition pipeline uses generic deep visual embeddings and similarity matching. Region crops are an early implementation rather than specialized animal biometric models. Therefore, this project should be described as **animal re-identification using visual embeddings**, not as a clinically or scientifically validated biometric identification system.
+
+Standard pretrained object-detection classes may not cover every livestock species equally; model/class coverage will be validated in Phase 2.
+
+## License
+
+See `LICENSE`.
