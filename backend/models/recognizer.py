@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 from typing import Dict, Mapping, Optional
+
 import numpy as np
-from utils.similarity import normalize_embedding, weighted_similarity
+
+try:
+    from backend.utils.similarity import normalize_embedding, weighted_similarity
+except ModuleNotFoundError:
+    from utils.similarity import normalize_embedding, weighted_similarity
 
 @dataclass
 class RecognitionMatch:
