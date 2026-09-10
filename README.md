@@ -93,7 +93,7 @@ animal-detection/
 │   └── requirements.txt
 ├── frontend/                 # Static dashboard assets
 ├── tests/                    # Regression tests
-├── scripts/                  # Development/restore helpers
+├── scripts/                  # Development/validation helpers
 ├── docs/                     # Phase and project documentation
 ├── .github/workflows/        # Continuous integration
 ├── .gitignore
@@ -130,7 +130,15 @@ pytest -q
 
 GitHub Actions runs the same regression suite against the backend dependency set.
 
-### 4. Frontend
+### 4. Validate the local runtime
+
+```powershell
+python scripts/validate_runtime.py
+```
+
+The validator checks the core API/ML dependencies. If `YOLO_MODEL_PATH` or `backend/yolov8n.pt` is available, it also loads the detector and runs one synthetic-image inference. A missing model is reported as **NOT RUN**, not as a passing inference test.
+
+### 5. Frontend
 
 The static frontend is located under `frontend/`. Serve it with a local static server and configure its API base URL for the running backend.
 
@@ -182,9 +190,20 @@ This is useful for demonstrating an end-to-end re-identification architecture, b
 - Camera location is configuration metadata; the application does not automatically determine physical geolocation.
 - Production deployment, large-scale performance, security hardening, and real-world accuracy still require environment-specific validation.
 
-## Testing and CI
+## Testing and validation
 
-The repository includes regression tests covering core detector mapping, camera configuration, recognition behavior, and identity-event metadata. GitHub Actions installs `backend/requirements.txt` and runs `pytest -q` with the repository root on `PYTHONPATH`.
+The repository includes regression tests covering API smoke behavior, detector/species mapping, camera configuration, recognition behavior, identity-event metadata, identity-pipeline behavior, and frontend/API contracts. GitHub Actions installs `backend/requirements.txt` and runs `pytest -q` with the repository root on `PYTHONPATH`.
+
+See [`docs/TESTING.md`](docs/TESTING.md) for the complete validation procedure and the distinction between automated tests and real model/camera validation.
+
+### Validation status
+
+- **Automated regression tests:** validated in GitHub Actions.
+- **API smoke tests:** validated in GitHub Actions.
+- **Inference-result parsing:** covered by deterministic tests without requiring a camera.
+- **Real YOLO inference:** model/environment dependent; claim PASS only when a compatible weight is actually loaded and inference succeeds.
+- **Real camera/video accuracy:** not benchmarked in this repository yet.
+- **Production performance/security:** not validated.
 
 ## Development roadmap
 
@@ -194,7 +213,9 @@ The repository includes regression tests covering core detector mapping, camera 
 - [x] Persistent animal ID generation
 - [x] Camera ID/location identity events
 - [x] Complete backend source integration
+- [x] Frontend dashboard and API integration
 - [x] Regression test suite and CI workflow
+- [x] Deterministic runtime/inference validation coverage
 - [ ] Full environment-based runtime validation with real camera/video data
 - [ ] Animal-specific embedding training/evaluation
 - [ ] Production deployment and monitoring
